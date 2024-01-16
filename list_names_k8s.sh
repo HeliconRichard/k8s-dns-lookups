@@ -2,7 +2,7 @@
 
 POD="dnsutils"
 
-echo =========== Create a pod ==================
+printf "=========== Create a pod ==================\n"
 kubectl run ${POD} --image=ubuntu --restart=Never -- /bin/sh -c 'while true; do echo hello;sleep 10;done'
 
 # Wait for the pod "ubuntu" to contain the status condition of type "Ready"
@@ -22,14 +22,13 @@ kubectl cp ./ips ${POD}:/
 kubectl cp ./podips ${POD}:/
 kubectl cp ./dns ${POD}:/
 
-printf '%.0s\n' {1..2}
-echo =========== Print all k8s SVC DNS records ====================
+printf "\n=========== Print all k8s SVC DNS records ===========\n"
 kubectl exec -it ${POD} -- ./dns ips
 
-echo =========== Print all k8s pod DNS records ====================
+printf "\n=========== Print all k8s pod DNS records ===========\n"
 kubectl exec -it ${POD} -- ./dns podips
 
-echo ========= Cleanup  ===============
+printf "\n=========== Cleanup ===========\n"
 nohup kubectl delete po ${POD}
 rm -f ./ips ./podips
 exit 0

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sort"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 		return
 	}
 
+	var results []string
 	filename := os.Args[1]
 
 	file, err := os.Open(filename)
@@ -24,24 +26,28 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
-	fmt.Printf("Domain names for svc:\n")
 	for scanner.Scan() {
 		ip := scanner.Text()
 
 		hostnames, err := net.LookupAddr(ip)
 		if err != nil {
-			fmt.Println("Error looking up hostname for %s: %s\n", ip, err)
+			fmt.Printf("Error looking up hostname for %s: %s\n", ip, err)
 			continue
 		}
 
 		for _, hostname := range hostnames {
-			// paddedHostname := fmt.Sprintf("%-30s", hostname)
-			fmt.Printf("%-20s | %s\n", ip, hostname)
-			// fmt.Printf("%-70s | %s\n", paddedHostname, ip)
+			result := fmt.Sprintf("%-15s | %s\n", ip, hostname)
+			results = append(results, result)
 		}
 	}
+
+	sort.Strings(results)
+
+	for _, result := range results {
+		fmt.Printf("%s", result)
+	}
+
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading file", err)
 	}
-	fmt.Println()
 }
